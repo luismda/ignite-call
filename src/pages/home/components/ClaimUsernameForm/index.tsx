@@ -35,6 +35,7 @@ export function ClaimUsernameForm() {
     <>
       <Form as="form" onSubmit={handleSubmit(handleClaimUsername)}>
         <TextInput
+          aria-label="Digite um nome de usuário"
           variant="sm"
           prefix="call.com/"
           placeholder="seu-usuario"
