@@ -1,10 +1,22 @@
+import { signIn, useSession } from 'next-auth/react'
+import { useRouter } from 'next/router'
 import { Button, Heading, MultiStep, Text } from '@ig-ui/react'
-import { ArrowRight } from 'phosphor-react'
+import { ArrowRight, Check } from 'phosphor-react'
 
 import { Container, Header } from '../style'
-import { ConnectBox, ConnectItem } from './style'
+import { AuthError, ConnectBox, ConnectItem } from './style'
 
 export default function ConnectCalendar() {
+  const session = useSession()
+  const router = useRouter()
+
+  const isSignedIn = session.status === 'authenticated'
+  const hasAuthError = !!router.query.error && !isSignedIn
+
+  async function handleConnectCalendar() {
+    await signIn('google')
+  }
+
   return (
     <Container>
       <Header>
@@ -21,13 +33,31 @@ export default function ConnectCalendar() {
         <ConnectItem>
           <Text>Google Calendar</Text>
 
-          <Button size="sm" variant="secondary">
-            Conectar
-            <ArrowRight />
-          </Button>
+          {isSignedIn ? (
+            <Button size="sm" variant="secondary" disabled>
+              Conectado
+              <Check />
+            </Button>
+          ) : (
+            <Button
+              size="sm"
+              variant="secondary"
+              onClick={handleConnectCalendar}
+            >
+              Conectar
+              <ArrowRight />
+            </Button>
+          )}
         </ConnectItem>
 
-        <Button disabled>
+        {hasAuthError && (
+          <AuthError size="sm">
+            Falha ao se conectar com o Google. Verifique se você habilitou as
+            permissões de acesso ao Google Calendar.
+          </AuthError>
+        )}
+
+        <Button disabled={!isSignedIn}>
           Próximo passo
           <ArrowRight />
         </Button>
