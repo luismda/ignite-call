@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router'
 import {
   Button,
   Checkbox,
@@ -88,14 +89,16 @@ export default function TimeIntervals() {
     },
   })
 
-  const weekDays = getWeekDays()
-
   const { fields } = useFieldArray({
     control,
     name: 'intervals',
   })
 
   const intervals = watch('intervals')
+
+  const weekDays = getWeekDays()
+
+  const router = useRouter()
 
   async function handleSetTimeInervals(data: any) {
     const { intervals }: TimeIntervalsFormOutput = data
@@ -104,6 +107,8 @@ export default function TimeIntervals() {
       await api.post('/users/time-intervals', {
         intervals,
       })
+
+      await router.push('/register/update-profile')
     } catch (error) {
       if (error instanceof AxiosError && error.response?.data.message) {
         return alert(error.response.data.message)
@@ -116,7 +121,7 @@ export default function TimeIntervals() {
   return (
     <Container>
       <Header>
-        <Heading as="strong">Quase lá</Heading>
+        <Heading as="strong">Defina sua disponibilidade</Heading>
         <Text>
           Defina o intervalo de horários que você está disponível em cada dia da
           semana.
