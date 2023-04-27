@@ -17,7 +17,7 @@ export default function ConnectCalendar() {
     await signIn('google')
   }
 
-  async function handleAdvanceNextStep() {
+  async function handleNavigateToNextStep() {
     await router.push('/register/time-intervals')
   }
 
@@ -61,7 +61,7 @@ export default function ConnectCalendar() {
           </AuthError>
         )}
 
-        <Button onClick={handleAdvanceNextStep} disabled={!isSignedIn}>
+        <Button onClick={handleNavigateToNextStep} disabled={!isSignedIn}>
           Próximo passo
           <ArrowRight />
         </Button>
