@@ -1,5 +1,6 @@
 import { Avatar, Heading, Text } from '@ig-ui/react'
 import { GetStaticPaths, GetStaticProps } from 'next'
+import { NextSeo } from 'next-seo'
 
 import { prisma } from '@/lib/prisma'
 import { ScheduleForm } from './ScheduleForm'
@@ -15,15 +16,22 @@ interface ScheduleProps {
 
 export default function Schedule({ user }: ScheduleProps) {
   return (
-    <Container>
-      <ProfileHeader>
-        <Avatar src={user.avatarUrl} alt="" />
-        <Heading>{user.name}</Heading>
-        <Text>{user.bio}</Text>
-      </ProfileHeader>
+    <>
+      <NextSeo
+        title={`Agendar com ${user.name} | Ignite Call`}
+        description={`Agende um dia e horário com ${user.name}.`}
+      />
 
-      <ScheduleForm />
-    </Container>
+      <Container>
+        <ProfileHeader>
+          <Avatar src={user.avatarUrl} alt="" />
+          <Heading>{user.name}</Heading>
+          <Text>{user.bio}</Text>
+        </ProfileHeader>
+
+        <ScheduleForm />
+      </Container>
+    </>
   )
 }
 
