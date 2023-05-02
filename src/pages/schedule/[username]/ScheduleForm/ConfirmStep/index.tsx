@@ -6,6 +6,9 @@ import { z } from 'zod'
 import dayjs from 'dayjs'
 
 import { ConfirmForm, FormActions, FormError, FormHeader } from './style'
+import { AxiosError } from 'axios'
+import { api } from '@/lib/axios'
+import { useRouter } from 'next/router'
 
 const confirmSchedulingFormSchema = z.object({
   name: z
@@ -24,12 +27,12 @@ type ConfirmSchedulingFormData = z.infer<typeof confirmSchedulingFormSchema>
 
 interface ConfirmStepProps {
   schedulingDate: Date
-  onCancelConfirmation: () => void
+  onFinishedConfirmation: () => void
 }
 
 export function ConfirmStep({
   schedulingDate,
-  onCancelConfirmation,
+  onFinishedConfirmation,
 }: ConfirmStepProps) {
   const {
     register,
@@ -39,7 +42,29 @@ export function ConfirmStep({
     resolver: zodResolver(confirmSchedulingFormSchema),
   })
 
-  async function handleConfirmScheduling(data: ConfirmSchedulingFormData) {}
+  const router = useRouter()
+  const username = String(router.query.username)
+
+  async function handleConfirmScheduling(data: ConfirmSchedulingFormData) {
+    const { name, email, observations } = data
+
+    try {
+      await api.post(`/users/${username}/schedule`, {
+        name,
+        email,
+        observations,
+        date: schedulingDate,
+      })
+
+      onFinishedConfirmation()
+    } catch (error) {
+      if (error instanceof AxiosError && error.response?.data.message) {
+        return alert(error.response.data.message)
+      }
+
+      console.error(error)
+    }
+  }
 
   const describedDate = dayjs(schedulingDate).format('DD[ de ]MMMM[ de ]YYYY')
   const describedTime = dayjs(schedulingDate).format('HH:mm[h]')
@@ -86,7 +111,7 @@ export function ConfirmStep({
         <Button
           type="button"
           variant="tertiary"
-          onClick={onCancelConfirmation}
+          onClick={onFinishedConfirmation}
           disabled={isSubmitting}
         >
           Cancelar
