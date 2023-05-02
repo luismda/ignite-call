@@ -1,11 +1,10 @@
-version: '3'
+version: '2'
 
 services:
-  postgresql:
-    image: bitnami/postgresql
+  mysql:
+    image: 'bitnami/mysql:latest'
     ports:
-      - 5432:5432
+      - 3306:3306
     environment:
-      - POSTGRESQL_USERNAME=igcallpg
-      - POSTGRESQL_PASSWORD=igcallpg
-      - POSTGRESQL_DATABASE=ignitecall
+      - MYSQL_ROOT_PASSWORD=docker
+      - MYSQL_DATABASE=ignitecall

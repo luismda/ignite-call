@@ -30,7 +30,7 @@ export const TimePicker = styled('div', {
 
   '@media(min-width: 901px)': {
     borderLeft: '1px solid $gray600',
-    overflowY: 'scroll',
+    overflowY: 'auto',
 
     position: 'absolute',
     top: 0,
@@ -65,6 +65,7 @@ export const TimePickerHeader = styled(Text, {
 export const TimePickerList = styled('div', {
   marginTop: '$3',
   display: 'grid',
+  alignItems: 'flex-start',
   gridTemplateColumns: '1fr',
   gap: '$2',
 
