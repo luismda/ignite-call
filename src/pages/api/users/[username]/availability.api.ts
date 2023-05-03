@@ -81,9 +81,5 @@ export default async function handler(
     },
   })
 
-  const unavailableTimes = blockedTimes.map((blockedTime) => {
-    return blockedTime.date
-  })
-
-  return res.json({ possibleTimes, unavailableTimes })
+  return res.json({ possibleTimes, blockedTimes })
 }
