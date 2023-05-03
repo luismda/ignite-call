@@ -84,7 +84,10 @@ export function CalendarStep({ onSelectDateTime }: CalendarStepProps) {
                 <TimePickerItem
                   key={hour}
                   onClick={() => handleSelectTime(hour)}
-                  disabled={!availability.availableTimes.includes(hour)}
+                  disabled={
+                    !availability.availableTimes.includes(hour) ||
+                    dayjs(selectedDate).set('hour', hour).isBefore(new Date())
+                  }
                 >
                   {dayjs(selectedDate)
                     .set('hour', hour)
