@@ -1,4 +1,5 @@
 import { Text, styled } from '@ig-ui/react'
+import Skeleton from 'react-loading-skeleton'
 
 export const CalendarContainer = styled('div', {
   display: 'flex',
@@ -94,4 +95,10 @@ export const CalendarDay = styled('button', {
   '&:focus': {
     boxShadow: '0 0 0 2px $colors$gray100',
   },
+})
+
+export const CalendarDaySkeleton = styled(Skeleton, {
+  width: '100%',
+  aspectRatio: '1 / 0.9',
+  borderRadius: '$sm',
 })

@@ -1,4 +1,5 @@
 import { Box, Text, styled } from '@ig-ui/react'
+import Skeleton from 'react-loading-skeleton'
 
 export const Container = styled(Box, {
   margin: '$6 auto 0',
@@ -68,6 +69,7 @@ export const TimePickerList = styled('div', {
   alignItems: 'flex-start',
   gridTemplateColumns: '1fr',
   gap: '$2',
+  paddingBottom: '$6',
 
   '@media(max-width: 900px)': {
     gridTemplateColumns: '1fr 1fr',
@@ -84,10 +86,6 @@ export const TimePickerItem = styled('button', {
   fontSize: '$sm',
   lineHeight: '$base',
 
-  '&:last-child': {
-    marginBottom: '$6',
-  },
-
   '&:disabled': {
     background: 'none',
     cursor: 'default',
@@ -101,4 +99,9 @@ export const TimePickerItem = styled('button', {
   '&:focus': {
     boxShadow: '0 0 0 2px $colors$gray100',
   },
+})
+
+export const TimePickerItemSkeleton = styled(Skeleton, {
+  borderRadius: '$sm',
+  height: '$10',
 })

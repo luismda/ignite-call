@@ -8,6 +8,7 @@ import {
   CalendarBody,
   CalendarContainer,
   CalendarDay,
+  CalendarDaySkeleton,
   CalendarHeader,
   CalendarTitle,
 } from './style'
@@ -59,9 +60,9 @@ export function Calendar({ selectedDate, onSelectedDate }: CalendarProps) {
   const currentMonth = currentDate.format('MMMM')
   const currentYear = currentDate.format('YYYY')
 
-  const username = String(router.query.username)
+  const username = String(router.query.username ?? '')
 
-  const { data: blockedDates } = useQuery<BlockedDates>(
+  const { data: blockedDates, isLoading } = useQuery<BlockedDates>(
     ['blocked-dates', currentDate.get('year'), currentDate.get('month')],
     async () => {
       const response = await api.get(`/users/${username}/blocked-dates`, {
@@ -72,6 +73,9 @@ export function Calendar({ selectedDate, onSelectedDate }: CalendarProps) {
       })
 
       return response.data
+    },
+    {
+      enabled: !!username,
     },
   )
 
@@ -171,24 +175,38 @@ export function Calendar({ selectedDate, onSelectedDate }: CalendarProps) {
           </tr>
         </thead>
         <tbody>
-          {calendarWeeks.map(({ week, days }) => {
-            return (
-              <tr key={week}>
-                {days.map(({ date, disabled }) => {
-                  return (
-                    <td key={date.toString()}>
-                      <CalendarDay
-                        onClick={() => onSelectedDate(date.toDate())}
-                        disabled={disabled}
-                      >
-                        {date.get('date')}
-                      </CalendarDay>
-                    </td>
-                  )
-                })}
-              </tr>
-            )
-          })}
+          {isLoading
+            ? Array.from({ length: 5 }).map((_, week) => {
+                return (
+                  <tr key={week}>
+                    {Array.from({ length: 7 }).map((_, day) => {
+                      return (
+                        <td key={day}>
+                          <CalendarDaySkeleton />
+                        </td>
+                      )
+                    })}
+                  </tr>
+                )
+              })
+            : calendarWeeks.map(({ week, days }) => {
+                return (
+                  <tr key={week}>
+                    {days.map(({ date, disabled }) => {
+                      return (
+                        <td key={date.toString()}>
+                          <CalendarDay
+                            onClick={() => onSelectedDate(date.toDate())}
+                            disabled={disabled}
+                          >
+                            {date.get('date')}
+                          </CalendarDay>
+                        </td>
+                      )
+                    })}
+                  </tr>
+                )
+              })}
         </tbody>
       </CalendarBody>
     </CalendarContainer>

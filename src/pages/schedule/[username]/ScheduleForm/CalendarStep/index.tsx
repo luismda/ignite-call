@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { useRouter } from 'next/router'
 import { useQuery } from '@tanstack/react-query'
 import dayjs from 'dayjs'
+import { SkeletonTheme } from 'react-loading-skeleton'
+import { theme } from '@ig-ui/react'
 
 import { api } from '@/lib/axios'
 import { Calendar } from '@/components/Calendar'
@@ -10,6 +12,7 @@ import {
   TimePicker,
   TimePickerHeader,
   TimePickerItem,
+  TimePickerItemSkeleton,
   TimePickerList,
 } from './style'
 
@@ -49,7 +52,7 @@ export function CalendarStep({ onSelectDateTime }: CalendarStepProps) {
     onSelectDateTime(dateWithTime)
   }
 
-  const { data: availability } = useQuery<Availability>(
+  const { data: availability, isLoading } = useQuery<Availability>(
     ['availability', selectedDateWithoutTime],
     async () => {
       const response = await api.get(`/users/${username}/availability`, {
@@ -81,38 +84,52 @@ export function CalendarStep({ onSelectDateTime }: CalendarStepProps) {
     return !isTimeBlocked && !isTimeInPast
   })
 
+  const skeletonBaseColor = String(theme.colors.gray700)
+  const skeletonHighlightColor = String(theme.colors.gray600)
+
   return (
-    <Container isTimePickerOpen={isDateSelected}>
-      <Calendar selectedDate={selectedDate} onSelectedDate={setSelectedDate} />
+    <SkeletonTheme
+      baseColor={skeletonBaseColor}
+      highlightColor={skeletonHighlightColor}
+    >
+      <Container isTimePickerOpen={isDateSelected}>
+        <Calendar
+          selectedDate={selectedDate}
+          onSelectedDate={setSelectedDate}
+        />
 
-      {isDateSelected && (
-        <TimePicker>
-          <TimePickerHeader>
-            {weekDay}, <span>{describedDate}</span>
-          </TimePickerHeader>
+        {isDateSelected && (
+          <TimePicker>
+            <TimePickerHeader>
+              {weekDay}, <span>{describedDate}</span>
+            </TimePickerHeader>
 
-          <TimePickerList>
-            {availability &&
-              availability.possibleTimes.map((hour) => {
-                const timeInMinutes = hour * 60
-                const minutes = timeInMinutes % 60
+            <TimePickerList>
+              {isLoading
+                ? Array.from({ length: 10 }).map((_, i) => {
+                    return <TimePickerItemSkeleton key={i} />
+                  })
+                : availability?.possibleTimes.map((hour) => {
+                    const timeInMinutes = hour * 60
+                    const minutes = timeInMinutes % 60
 
-                return (
-                  <TimePickerItem
-                    key={hour}
-                    onClick={() => handleSelectTime(hour)}
-                    disabled={!availableTimes?.includes(hour)}
-                  >
-                    {dayjs(selectedDate)
-                      .set('hour', hour)
-                      .set('minutes', minutes)
-                      .format('HH:mm[h]')}
-                  </TimePickerItem>
-                )
-              })}
-          </TimePickerList>
-        </TimePicker>
-      )}
-    </Container>
+                    return (
+                      <TimePickerItem
+                        key={hour}
+                        onClick={() => handleSelectTime(hour)}
+                        disabled={!availableTimes?.includes(hour)}
+                      >
+                        {dayjs(selectedDate)
+                          .set('hour', hour)
+                          .set('minutes', minutes)
+                          .format('HH:mm[h]')}
+                      </TimePickerItem>
+                    )
+                  })}
+            </TimePickerList>
+          </TimePicker>
+        )}
+      </Container>
+    </SkeletonTheme>
   )
 }
