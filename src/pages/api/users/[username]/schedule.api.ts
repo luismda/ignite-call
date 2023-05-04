@@ -53,25 +53,16 @@ export default async function handler(
     })
   }
 
-  const schedulingTimeInMinutes = schedulingDate.get('hours') * 60
-
   const availabilityExisting = await prisma.userTimeInterval.findFirst({
     where: {
       user_id: user.id,
       week_day: schedulingDate.get('day'),
-      time_start_in_minutes: {
-        lte: schedulingTimeInMinutes,
-      },
-      time_end_in_minutes: {
-        gte: schedulingTimeInMinutes,
-      },
     },
   })
 
   if (!availabilityExisting) {
     return res.status(400).json({
-      message:
-        'The user is not available for scheduling with this day and time.',
+      message: 'The user is not available for scheduling with this day.',
     })
   }
 
