@@ -6,12 +6,12 @@ import {
   MultiStep,
   Text,
   TextInput,
+  Toast,
 } from '@ig-ui/react'
 import { ArrowRight } from 'phosphor-react'
 import { Controller, useFieldArray, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { AxiosError } from 'axios'
 import { NextSeo } from 'next-seo'
 
 import { api } from '@/lib/axios'
@@ -26,6 +26,7 @@ import {
   IntervalItem,
   IntervalsContainer,
 } from './style'
+import { useMutation } from '@tanstack/react-query'
 
 const timeIntervalsFormSchema = z.object({
   intervals: z
@@ -69,6 +70,16 @@ type TimeIntervalsFormInput = z.input<typeof timeIntervalsFormSchema>
 type TimeIntervalsFormOutput = z.output<typeof timeIntervalsFormSchema>
 
 export default function TimeIntervals() {
+  const setTimeIntervals = useMutation(
+    async (data: TimeIntervalsFormOutput) => {
+      const response = await api.post('/users/time-intervals', {
+        intervals: data.intervals,
+      })
+
+      return response.data
+    },
+  )
+
   const {
     register,
     handleSubmit,
@@ -105,18 +116,12 @@ export default function TimeIntervals() {
     const { intervals }: TimeIntervalsFormOutput = data
 
     try {
-      await api.post('/users/time-intervals', {
+      await setTimeIntervals.mutateAsync({
         intervals,
       })
 
       await router.push('/register/update-profile')
-    } catch (error) {
-      if (error instanceof AxiosError && error.response?.data.message) {
-        return alert(error.response.data.message)
-      }
-
-      console.error(error)
-    }
+    } catch (error) {}
   }
 
   return (
@@ -194,6 +199,17 @@ export default function TimeIntervals() {
           </Button>
         </IntervalBox>
       </Container>
+
+      {setTimeIntervals.isError && (
+        <Toast
+          title="Ops..."
+          description={
+            <Text>
+              Ocorreu um erro ao salvar sua disponibilidade. Tente novamente.
+            </Text>
+          }
+        />
+      )}
     </>
   )
 }
