@@ -1,11 +1,18 @@
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
-import { Button, Heading, MultiStep, Text, TextInput } from '@ig-ui/react'
+import {
+  Button,
+  Heading,
+  MultiStep,
+  Text,
+  TextInput,
+  Toast,
+} from '@ig-ui/react'
 import { ArrowRight } from 'phosphor-react'
+import { useMutation } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { AxiosError } from 'axios'
 import { NextSeo } from 'next-seo'
 
 import { Container, Form, FormError, Header } from './style'
@@ -28,6 +35,15 @@ const registerFormSchema = z.object({
 type RegisterFormData = z.infer<typeof registerFormSchema>
 
 export default function Register() {
+  const registerUser = useMutation(async (data: RegisterFormData) => {
+    const response = await api.post('/users', {
+      name: data.name,
+      username: data.username,
+    })
+
+    return response.data
+  })
+
   const {
     register,
     handleSubmit,
@@ -47,19 +63,13 @@ export default function Register() {
 
   async function handleRegister(data: RegisterFormData) {
     try {
-      await api.post('/users', {
+      await registerUser.mutateAsync({
         name: data.name,
         username: data.username,
       })
 
       await router.push('/register/connect-calendar')
-    } catch (error) {
-      if (error instanceof AxiosError && error.response?.data.message) {
-        return alert(error.response.data.message)
-      }
-
-      console.error(error)
-    }
+    } catch (error) {}
   }
 
   return (
@@ -106,6 +116,15 @@ export default function Register() {
           </Button>
         </Form>
       </Container>
+
+      {registerUser.isError && (
+        <Toast
+          title="Ops..."
+          description={
+            <Text>Ocorreu um erro ao fazer o cadastro. Tente novamente.</Text>
+          }
+        />
+      )}
     </>
   )
 }
