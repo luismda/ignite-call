@@ -53,6 +53,7 @@ export default async function handler(
 
   if (timeIntervalsBodyValidation.success === false) {
     return res.status(400).json({
+      code: 'INVALID_DATA',
       message: 'Validation error.',
       issues: timeIntervalsBodyValidation.error.format(),
     })

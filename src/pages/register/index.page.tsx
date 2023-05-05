@@ -8,6 +8,7 @@ import {
   TextInput,
   Toast,
 } from '@ig-ui/react'
+import { AxiosError } from 'axios'
 import { ArrowRight } from 'phosphor-react'
 import { useMutation } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
@@ -34,15 +35,29 @@ const registerFormSchema = z.object({
 
 type RegisterFormData = z.infer<typeof registerFormSchema>
 
-export default function Register() {
-  const registerUser = useMutation(async (data: RegisterFormData) => {
-    const response = await api.post('/users', {
-      name: data.name,
-      username: data.username,
-    })
+type CodeError = 'INVALID_DATA' | 'USERNAME_ALREADY_TAKEN'
+type RegisterError = AxiosError<{ code: CodeError; message: string }>
 
-    return response.data
-  })
+const registerErrorMessages = {
+  INVALID_DATA: 'Informe os dados no formato correto.',
+  USERNAME_ALREADY_TAKEN:
+    'O nome de usuário não está disponível, tente escolher outro.',
+}
+
+export default function Register() {
+  const registerUser = useMutation<any, RegisterError, RegisterFormData>(
+    async (data) => {
+      const response = await api.post('/users', {
+        name: data.name,
+        username: data.username,
+      })
+
+      return response.data
+    },
+  )
+
+  const error = registerUser.error?.response?.data
+  const errorMessage = error?.code ? registerErrorMessages[error.code] : null
 
   const {
     register,
@@ -129,7 +144,10 @@ export default function Register() {
         <Toast
           title="Ops..."
           description={
-            <Text>Ocorreu um erro ao fazer o cadastro. Tente novamente.</Text>
+            <Text>
+              {errorMessage ??
+                'Ocorreu um erro ao realizar o cadastro. Tente novamente.'}
+            </Text>
           }
         />
       )}

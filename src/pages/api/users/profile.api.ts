@@ -4,10 +4,6 @@ import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { buildNextAuthOptions } from '../auth/[...nextauth].api'
 
-const updateProfileBodySchema = z.object({
-  bio: z.string().trim(),
-})
-
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
@@ -26,10 +22,19 @@ export default async function handler(
     return res.status(401).end()
   }
 
+  const updateProfileBodySchema = z.object({
+    bio: z
+      .string()
+      .trim()
+      .nullable()
+      .transform((bio) => bio || null),
+  })
+
   const updateProfileValidation = updateProfileBodySchema.safeParse(req.body)
 
   if (updateProfileValidation.success === false) {
     return res.status(400).json({
+      code: 'INVALID_DATA',
       message: 'Validation error.',
       issues: updateProfileValidation.error.format(),
     })

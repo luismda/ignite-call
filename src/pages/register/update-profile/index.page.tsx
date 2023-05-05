@@ -24,7 +24,7 @@ import { Container, Header } from '../style'
 import { FormAnnotation, ProfileBox } from './style'
 
 const updateProfileFormSchema = z.object({
-  bio: z.string().trim(),
+  bio: z.string().trim().nullable(),
 })
 
 type UpdateProfileFormData = z.infer<typeof updateProfileFormSchema>

@@ -22,13 +22,20 @@ export default async function handler(
   })
 
   if (!user) {
-    return res.status(400).json({ message: 'User does not exist.' })
+    return res.status(400).json({
+      code: 'USER_DOES_NOT_EXIST',
+      message: 'User does not exist.',
+    })
   }
 
   const createSchedulingBodySchema = z.object({
     name: z.string().trim().min(3),
     email: z.string().email(),
-    observations: z.string().trim().nullable(),
+    observations: z
+      .string()
+      .trim()
+      .nullable()
+      .transform((observations) => observations || null),
     date: z.string().datetime(),
   })
 
@@ -38,6 +45,7 @@ export default async function handler(
 
   if (schedulingBodyValidation.success === false) {
     return res.status(400).json({
+      code: 'INVALID_DATA',
       message: 'Validation error.',
       issues: schedulingBodyValidation.error.format(),
     })
@@ -49,6 +57,7 @@ export default async function handler(
 
   if (schedulingDate.isBefore(new Date())) {
     return res.status(400).json({
+      code: 'DATE_IN_PAST',
       message: 'Date is in the past.',
     })
   }
@@ -62,6 +71,7 @@ export default async function handler(
 
   if (!availabilityExisting) {
     return res.status(400).json({
+      code: 'USER_IS_NOT_AVAILABLE_ON_THIS_DATE',
       message: 'The user is not available for scheduling with this day.',
     })
   }
@@ -75,6 +85,7 @@ export default async function handler(
 
   if (conflictingScheduling) {
     return res.status(400).json({
+      code: 'ANOTHER_SCHEDULING_AT_SAME_TIME',
       message: 'There is another scheduling at the same time.',
     })
   }

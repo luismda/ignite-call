@@ -26,6 +26,7 @@ export default async function handler(
 
   if (blockedDatesQueryValidation.success === false) {
     return res.status(400).json({
+      code: 'INVALID_DATA',
       message: 'Validation error.',
       issues: blockedDatesQueryValidation.error.format(),
     })
@@ -40,7 +41,10 @@ export default async function handler(
   })
 
   if (!user) {
-    return res.status(400).json({ message: 'User does not exist.' })
+    return res.status(400).json({
+      code: 'USER_DOES_NOT_EXIST',
+      message: 'User does not exist.',
+    })
   }
 
   const availableWeekDays = await prisma.userTimeInterval.findMany({
