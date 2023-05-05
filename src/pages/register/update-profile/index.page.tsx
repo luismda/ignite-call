@@ -117,6 +117,15 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     buildNextAuthOptions(req, res),
   )
 
+  if (!session) {
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false,
+      },
+    }
+  }
+
   return {
     props: {
       session,

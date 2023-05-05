@@ -1,3 +1,4 @@
+import { GetServerSideProps } from 'next'
 import { useRouter } from 'next/router'
 import {
   Button,
@@ -13,11 +14,13 @@ import { Controller, useFieldArray, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { NextSeo } from 'next-seo'
+import { getServerSession } from 'next-auth'
 import { useMutation } from '@tanstack/react-query'
 
 import { api } from '@/lib/axios'
 import { getWeekDays } from '@/utils/get-week-days'
 import { convertTimeStringToMinutes } from '@/utils/convert-time-string-to-minutes'
+import { buildNextAuthOptions } from '@/pages/api/auth/[...nextauth].api'
 import { Container, Header } from '../style'
 import {
   FormError,
@@ -212,4 +215,27 @@ export default function TimeIntervals() {
       )}
     </>
   )
+}
+
+export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
+  const session = await getServerSession(
+    req,
+    res,
+    buildNextAuthOptions(req, res),
+  )
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false,
+      },
+    }
+  }
+
+  return {
+    props: {
+      session,
+    },
+  }
 }
