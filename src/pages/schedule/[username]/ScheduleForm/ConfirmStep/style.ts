@@ -28,6 +28,8 @@ export const FormHeader = styled('div', {
     alignItems: 'center',
     gap: '$2',
 
+    fontWeight: '$regular',
+
     svg: {
       color: '$gray200',
       width: '$5',

@@ -45,7 +45,7 @@ export default function Home() {
             height={400}
             quality={100}
             priority
-            alt="Calendário com o mês de Setembro de 2022 e alguns horários disponíveis para agendamento no dia 20 desse mês, simbolizando a aplicação em funcionamento."
+            alt="Calendário com o mês de Setembro de 2022 e o dia 20 selecionado (terça-feira), com alguns horários listados ao lado direito, das 09:00h até as 16:00h representando os horários disponíveis para agendamento nesse dia."
           />
         </Preview>
       </Container>

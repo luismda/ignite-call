@@ -42,6 +42,7 @@ export function Calendar({ selectedDate, onSelectedDate }: CalendarProps) {
   })
 
   const router = useRouter()
+  const username = String(router.query.username ?? '')
 
   function handlePreviousMonth() {
     const previousMonthDate = currentDate.subtract(1, 'month')
@@ -54,13 +55,6 @@ export function Calendar({ selectedDate, onSelectedDate }: CalendarProps) {
 
     setCurrentDate(nextMonthDate)
   }
-
-  const shortWeekDays = getWeekDays({ short: true })
-
-  const currentMonth = currentDate.format('MMMM')
-  const currentYear = currentDate.format('YYYY')
-
-  const username = String(router.query.username ?? '')
 
   const { data: blockedDates, isLoading } = useQuery<BlockedDates>(
     ['blocked-dates', currentDate.get('year'), currentDate.get('month')],
@@ -149,18 +143,33 @@ export function Calendar({ selectedDate, onSelectedDate }: CalendarProps) {
     return calendarWeeks
   }, [currentDate, blockedDates])
 
+  const shortWeekDays = getWeekDays({ short: true })
+
+  const currentMonth = currentDate.format('MMMM')
+  const previousMonth = currentDate
+    .subtract(1, 'month')
+    .format('MMMM[ de ]YYYY')
+  const nextMonth = currentDate.add(1, 'month').format('MMMM[ de ]YYYY')
+  const currentYear = currentDate.format('YYYY')
+
   return (
     <CalendarContainer>
       <CalendarHeader>
-        <CalendarTitle>
+        <CalendarTitle as="strong">
           {currentMonth} <span>{currentYear}</span>
         </CalendarTitle>
 
         <CalendarActions>
-          <button onClick={handlePreviousMonth} aria-label="Mês anterior">
+          <button
+            onClick={handlePreviousMonth}
+            aria-label={`Mês anterior (${previousMonth})`}
+          >
             <CaretLeft />
           </button>
-          <button onClick={handleNextMonth} aria-label="Próximo mês">
+          <button
+            onClick={handleNextMonth}
+            aria-label={`Próximo mês (${nextMonth})`}
+          >
             <CaretRight />
           </button>
         </CalendarActions>
@@ -193,10 +202,15 @@ export function Calendar({ selectedDate, onSelectedDate }: CalendarProps) {
                 return (
                   <tr key={week}>
                     {days.map(({ date, disabled }) => {
+                      const describedDate = date.format(
+                        'dddd[, ]DD[ de ]MMMM[ de ]YYYY',
+                      )
+
                       return (
                         <td key={date.toString()}>
                           <CalendarDay
                             onClick={() => onSelectedDate(date.toDate())}
+                            aria-label={describedDate}
                             disabled={disabled}
                           >
                             {date.get('date')}

@@ -89,7 +89,9 @@ export default function Register() {
 
         <Form as="form" onSubmit={handleSubmit(handleRegister)}>
           <label>
-            <Text size="sm">Nome de usuário</Text>
+            <Text as="span" size="sm">
+              Nome de usuário
+            </Text>
             <TextInput
               prefix="call.com/"
               placeholder="seu-usuario"
@@ -97,16 +99,22 @@ export default function Register() {
             />
 
             {errors.username && (
-              <FormError size="sm">{errors.username.message}</FormError>
+              <FormError as="span" size="sm">
+                {errors.username.message}
+              </FormError>
             )}
           </label>
 
           <label>
-            <Text size="sm">Nome completo</Text>
+            <Text as="span" size="sm">
+              Nome completo
+            </Text>
             <TextInput placeholder="Seu nome" {...register('name')} />
 
             {errors.name && (
-              <FormError size="sm">{errors.name.message}</FormError>
+              <FormError as="span" size="sm">
+                {errors.name.message}
+              </FormError>
             )}
           </label>
 

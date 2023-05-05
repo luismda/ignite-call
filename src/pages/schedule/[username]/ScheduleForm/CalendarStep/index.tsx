@@ -100,7 +100,7 @@ export function CalendarStep({ onSelectDateTime }: CalendarStepProps) {
 
         {isDateSelected && (
           <TimePicker>
-            <TimePickerHeader>
+            <TimePickerHeader as="strong">
               {weekDay}, <span>{describedDate}</span>
             </TimePickerHeader>
 
@@ -109,15 +109,25 @@ export function CalendarStep({ onSelectDateTime }: CalendarStepProps) {
                 ? Array.from({ length: 10 }).map((_, i) => {
                     return <TimePickerItemSkeleton key={i} />
                   })
-                : availability?.possibleTimes.map((hour) => {
+                : availability?.possibleTimes.map((hour, index, hours) => {
                     const timeInMinutes = hour * 60
                     const minutes = timeInMinutes % 60
+
+                    const isShouldBeHourDisabled =
+                      !availableTimes?.includes(hour)
+
+                    const isFirstHourEnabled = hours
+                      .slice(0, index)
+                      .every((hour) => !availableTimes?.includes(hour))
+                    const isShouldBeAutoFocus =
+                      !isShouldBeHourDisabled && isFirstHourEnabled
 
                     return (
                       <TimePickerItem
                         key={hour}
+                        autoFocus={isShouldBeAutoFocus}
                         onClick={() => handleSelectTime(hour)}
-                        disabled={!availableTimes?.includes(hour)}
+                        disabled={isShouldBeHourDisabled}
                       >
                         {dayjs(selectedDate)
                           .set('hour', hour)

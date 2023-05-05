@@ -162,7 +162,7 @@ export default function TimeIntervals() {
                         )
                       }}
                     />
-                    <Text>{weekDays[field.weekDay]}</Text>
+                    <Text as="span">{weekDays[field.weekDay]}</Text>
                   </IntervalDay>
 
                   <IntervalInputs>
@@ -171,7 +171,7 @@ export default function TimeIntervals() {
                       type="time"
                       step={60}
                       disabled={intervals[index].enabled === false}
-                      aria-label={`Horário inicial de disponibilidade nesse dia (${
+                      aria-label={`Horário inicial de disponibilidade (${
                         weekDays[field.weekDay]
                       })`}
                       {...register(`intervals.${index}.startTime`)}
@@ -181,7 +181,7 @@ export default function TimeIntervals() {
                       type="time"
                       step={60}
                       disabled={intervals[index].enabled === false}
-                      aria-label={`Horário final de disponibilidade nesse dia (${
+                      aria-label={`Horário final de disponibilidade (${
                         weekDays[field.weekDay]
                       })`}
                       {...register(`intervals.${index}.endTime`)}

@@ -81,27 +81,33 @@ export function ConfirmStep({
     <>
       <ConfirmForm as="form" onSubmit={handleSubmit(handleConfirmScheduling)}>
         <FormHeader>
-          <Text>
+          <Text as="strong">
             <CalendarBlank />
             {describedDate}
           </Text>
-          <Text>
+          <Text as="strong">
             <Clock />
             {describedTime}
           </Text>
         </FormHeader>
 
         <label>
-          <Text size="sm">Nome completo</Text>
+          <Text as="span" size="sm">
+            Nome completo
+          </Text>
           <TextInput placeholder="Seu nome" {...register('name')} />
 
           {errors.name && (
-            <FormError size="sm">{errors.name.message}</FormError>
+            <FormError as="span" size="sm">
+              {errors.name.message}
+            </FormError>
           )}
         </label>
 
         <label>
-          <Text size="sm">Endereço de e-mail</Text>
+          <Text as="span" size="sm">
+            Endereço de e-mail
+          </Text>
           <TextInput
             type="email"
             placeholder="johndoe@example.com"
@@ -109,12 +115,16 @@ export function ConfirmStep({
           />
 
           {errors.email && (
-            <FormError size="sm">{errors.email.message}</FormError>
+            <FormError as="span" size="sm">
+              {errors.email.message}
+            </FormError>
           )}
         </label>
 
         <label>
-          <Text size="sm">Observações</Text>
+          <Text as="span" size="sm">
+            Observações
+          </Text>
           <TextArea {...register('observations')} />
         </label>
 

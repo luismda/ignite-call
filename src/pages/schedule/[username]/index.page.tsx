@@ -44,15 +44,20 @@ export default function Schedule({ user }: ScheduleProps) {
             {isFallback ? (
               <Skeleton width={64} height={64} circle />
             ) : (
-              <Avatar src={user?.avatarUrl} alt="" />
+              <Avatar src={user?.avatarUrl} alt={user?.name} />
             )}
 
             <Heading>
               {isFallback ? <Skeleton width={132} height={32} /> : user?.name}
             </Heading>
-            <Text>
-              {isFallback ? <Skeleton width={148} height={25} /> : user?.bio}
-            </Text>
+
+            {isFallback ? (
+              <Text>
+                <Skeleton width={148} height={25} />
+              </Text>
+            ) : user?.bio ? (
+              <Text>{user.bio}</Text>
+            ) : null}
           </ProfileHeader>
         </SkeletonTheme>
 

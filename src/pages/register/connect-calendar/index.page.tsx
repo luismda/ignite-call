@@ -44,7 +44,7 @@ export default function ConnectCalendar() {
 
         <ConnectBox>
           <ConnectItem>
-            <Text>Google Calendar</Text>
+            <Text as="strong">Google Calendar</Text>
 
             {isSignedIn ? (
               <Button size="sm" variant="secondary" disabled>

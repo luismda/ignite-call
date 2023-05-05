@@ -74,7 +74,7 @@ export default function UpdateProfile() {
 
         <ProfileBox as="form" onSubmit={handleSubmit(handleUpdateProfile)}>
           <label>
-            <Text>Foto de perfil</Text>
+            <Text as="span">Foto de perfil</Text>
             <Avatar
               src={session.data?.user.avatar_url}
               alt={session.data?.user.name}
@@ -82,7 +82,7 @@ export default function UpdateProfile() {
           </label>
 
           <label>
-            <Text>Sobre você</Text>
+            <Text as="span">Sobre você</Text>
             <TextArea {...register('bio')} />
             <FormAnnotation size="sm">
               Fale um pouco sobre você. Isto será exibido em sua página pessoal.
