@@ -28,6 +28,14 @@ export default function App({
             type: 'website',
             locale: 'pt_BR',
             siteName: 'Ignite Call',
+            images: [
+              {
+                url: '/og-image.png',
+                width: 600,
+                height: 400,
+                alt: 'Prévia da tela inicial da aplicação Ignite Call com um título e um calendário ao lado direito.',
+              },
+            ],
           }}
         />
 
