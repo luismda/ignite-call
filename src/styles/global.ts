@@ -14,6 +14,7 @@ export const globalStyles = globalCss({
 
     '&::-webkit-scrollbar': {
       width: '$2',
+      height: '$2',
     },
 
     '&::-webkit-scrollbar-thumb': {
@@ -23,6 +24,11 @@ export const globalStyles = globalCss({
 
     '&::-webkit-scrollbar-track': {
       background: '$gray600',
+      borderRadius: '$md',
+    },
+
+    '&::-webkit-scrollbar-corner': {
+      background: '$gray500',
       borderRadius: '$md',
     },
   },

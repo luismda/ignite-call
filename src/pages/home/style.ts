@@ -37,11 +37,19 @@ export const Hero = styled('div', {
     '@media(max-width: 600px)': {
       fontSize: '$6xl',
     },
+
+    '@media(max-width: 430px)': {
+      fontSize: '$5xl',
+    },
   },
 
   [`> ${Text}`]: {
     marginTop: '$2',
     color: '$gray200',
+
+    '@media(max-width: 430px)': {
+      fontSize: '$lg',
+    },
   },
 })
 
