@@ -28,9 +28,10 @@ export default function App({
             type: 'website',
             locale: 'pt_BR',
             siteName: 'Ignite Call',
+            url: 'https://ignite-call-luismda.vercel.app',
             images: [
               {
-                url: '/og-image.png',
+                url: 'https://ignite-call-luismda.vercel.app/og-image.png',
                 width: 600,
                 height: 400,
                 alt: 'Prévia da tela inicial da aplicação Ignite Call com um título e um calendário ao lado direito.',
