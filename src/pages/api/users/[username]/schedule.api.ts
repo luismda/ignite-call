@@ -53,7 +53,7 @@ export default async function handler(
 
   const { name, email, observations, date } = schedulingBodyValidation.data
 
-  const schedulingDate = dayjs(date).startOf('hour')
+  const schedulingDate = dayjs(date)
 
   if (schedulingDate.isBefore(new Date())) {
     return res.status(400).json({

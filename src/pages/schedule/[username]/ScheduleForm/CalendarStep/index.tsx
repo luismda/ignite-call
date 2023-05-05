@@ -43,10 +43,10 @@ export function CalendarStep({ onSelectDateTime }: CalendarStepProps) {
     ? dayjs(selectedDate).format('YYYY-MM-DD')
     : null
 
-  function handleSelectTime(hour: number) {
+  function handleSelectTime(hour: number, minutes: number) {
     const dateWithTime = dayjs(selectedDate)
       .set('hour', hour)
-      .startOf('hour')
+      .set('minutes', minutes)
       .toDate()
 
     onSelectDateTime(dateWithTime)
@@ -72,9 +72,16 @@ export function CalendarStep({ onSelectDateTime }: CalendarStepProps) {
     const timeInMinutes = time * 60
     const minutes = timeInMinutes % 60
 
-    const isTimeBlocked = availability.blockedTimes.some(
-      (blockedTime) => dayjs(blockedTime.date).get('hour') === time,
-    )
+    const isTimeBlocked = availability.blockedTimes.some((blockedTime) => {
+      const blockedDateTime = dayjs(blockedTime.date)
+
+      const blockedHour = blockedDateTime.get('hour')
+      const blockedMinutes = blockedDateTime.get('minutes')
+
+      const blockedTimeInMinutes = blockedHour * 60 + blockedMinutes
+
+      return blockedTimeInMinutes === timeInMinutes
+    })
 
     const isTimeInPast = dayjs(selectedDate)
       .set('hour', time)
@@ -126,7 +133,7 @@ export function CalendarStep({ onSelectDateTime }: CalendarStepProps) {
                       <TimePickerItem
                         key={hour}
                         autoFocus={isShouldBeAutoFocus}
-                        onClick={() => handleSelectTime(hour)}
+                        onClick={() => handleSelectTime(hour, minutes)}
                         disabled={isShouldBeHourDisabled}
                       >
                         {dayjs(selectedDate)
