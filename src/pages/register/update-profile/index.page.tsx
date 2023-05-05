@@ -2,7 +2,6 @@ import { GetServerSideProps } from 'next'
 import { useRouter } from 'next/router'
 import { useSession } from 'next-auth/react'
 import { getServerSession } from 'next-auth'
-import { AxiosError } from 'axios'
 import {
   Avatar,
   Button,
@@ -10,12 +9,14 @@ import {
   MultiStep,
   Text,
   TextArea,
+  Toast,
 } from '@ig-ui/react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { ArrowRight } from 'phosphor-react'
 import { NextSeo } from 'next-seo'
+import { useMutation } from '@tanstack/react-query'
 
 import { buildNextAuthOptions } from '@/pages/api/auth/[...nextauth].api'
 import { api } from '@/lib/axios'
@@ -29,6 +30,14 @@ const updateProfileFormSchema = z.object({
 type UpdateProfileFormData = z.infer<typeof updateProfileFormSchema>
 
 export default function UpdateProfile() {
+  const updateProfile = useMutation(async (data: UpdateProfileFormData) => {
+    const response = await api.put('/users/profile', {
+      bio: data.bio,
+    })
+
+    return response.data
+  })
+
   const {
     register,
     handleSubmit,
@@ -43,18 +52,12 @@ export default function UpdateProfile() {
 
   async function handleUpdateProfile(data: UpdateProfileFormData) {
     try {
-      await api.put('/users/profile', {
+      await updateProfile.mutateAsync({
         bio: data.bio,
       })
 
       await router.push(`/schedule/${session.data?.user.username}`)
-    } catch (error) {
-      if (error instanceof AxiosError && error.response?.data.message) {
-        return alert(error.response.data.message)
-      }
-
-      console.error(error)
-    }
+    } catch (error) {}
   }
 
   return (
@@ -92,6 +95,17 @@ export default function UpdateProfile() {
           </Button>
         </ProfileBox>
       </Container>
+
+      {updateProfile.isError && (
+        <Toast
+          title="Ops..."
+          description={
+            <Text>
+              Ocorreu um erro ao atualizar seu perfil. Tente novamente.
+            </Text>
+          }
+        />
+      )}
     </>
   )
 }

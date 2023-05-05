@@ -13,6 +13,7 @@ import { Controller, useFieldArray, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { NextSeo } from 'next-seo'
+import { useMutation } from '@tanstack/react-query'
 
 import { api } from '@/lib/axios'
 import { getWeekDays } from '@/utils/get-week-days'
@@ -26,7 +27,6 @@ import {
   IntervalItem,
   IntervalsContainer,
 } from './style'
-import { useMutation } from '@tanstack/react-query'
 
 const timeIntervalsFormSchema = z.object({
   intervals: z
