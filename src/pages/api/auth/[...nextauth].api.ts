@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse, NextPageContext } from 'next'
 import NextAuth, { NextAuthOptions } from 'next-auth'
 import GoogleProvider, { GoogleProfile } from 'next-auth/providers/google'
 import { PrismaAdapter } from '@/lib/auth/prisma-adapter'
+import { prisma } from '@/lib/prisma'
 
 export function buildNextAuthOptions(
   req: NextApiRequest | NextPageContext['req'],
@@ -41,6 +42,19 @@ export function buildNextAuthOptions(
           !account?.scope?.includes('https://www.googleapis.com/auth/calendar')
         ) {
           return '/register/connect-calendar?error=permissions'
+        }
+
+        const accountExisting = await prisma.account.findUnique({
+          where: {
+            provider_provider_account_id: {
+              provider_account_id: account.providerAccountId,
+              provider: account.provider,
+            },
+          },
+        })
+
+        if (accountExisting) {
+          return '/register/connect-calendar?error=account'
         }
 
         return true

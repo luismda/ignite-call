@@ -7,12 +7,17 @@ import { NextSeo } from 'next-seo'
 import { Container, Header } from '../style'
 import { AuthError, ConnectBox, ConnectItem } from './style'
 
+type AuthErrorType = 'permissions' | 'account' | undefined
+
 export default function ConnectCalendar() {
   const session = useSession()
   const router = useRouter()
 
   const isSignedIn = session.status === 'authenticated'
   const hasAuthError = !!router.query.error && !isSignedIn
+  const authErrorType = (
+    hasAuthError ? String(router.query.error) : undefined
+  ) as AuthErrorType
 
   async function handleConnectCalendar() {
     await signIn('google')
@@ -60,8 +65,11 @@ export default function ConnectCalendar() {
 
           {hasAuthError && (
             <AuthError size="sm">
-              Falha ao se conectar com o Google. Verifique se você habilitou as
-              permissões de acesso ao Google Calendar.
+              {authErrorType === 'permissions' &&
+                'Falha ao se conectar com o Google. Verifique se você habilitou as permissões de acesso ao Google Calendar.'}
+
+              {authErrorType === 'account' &&
+                'Falha ao se conectar com o Google. Tente utilizar outra conta.'}
             </AuthError>
           )}
 
