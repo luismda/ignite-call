@@ -1,14 +1,14 @@
-import { Button, Text, TextArea, TextInput } from '@ig-ui/react'
+import { useRouter } from 'next/router'
+import { Button, Text, TextArea, TextInput, Toast } from '@ig-ui/react'
 import { CalendarBlank, Clock } from 'phosphor-react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import dayjs from 'dayjs'
+import { useMutation } from '@tanstack/react-query'
 
 import { ConfirmForm, FormActions, FormError, FormHeader } from './style'
-import { AxiosError } from 'axios'
 import { api } from '@/lib/axios'
-import { useRouter } from 'next/router'
 
 const confirmSchedulingFormSchema = z.object({
   name: z
@@ -27,13 +27,31 @@ type ConfirmSchedulingFormData = z.infer<typeof confirmSchedulingFormSchema>
 
 interface ConfirmStepProps {
   schedulingDate: Date
-  onFinishedConfirmation: () => void
+  onCancelConfirmation: () => void
+  onSuccessConfirmation: () => void
 }
 
 export function ConfirmStep({
   schedulingDate,
-  onFinishedConfirmation,
+  onCancelConfirmation,
+  onSuccessConfirmation,
 }: ConfirmStepProps) {
+  const router = useRouter()
+  const username = String(router.query.username)
+
+  const confirmScheduling = useMutation(
+    async (data: ConfirmSchedulingFormData) => {
+      const response = await api.post(`/users/${username}/schedule`, {
+        name: data.name,
+        email: data.email,
+        observations: data.observations,
+        date: schedulingDate,
+      })
+
+      return response.data
+    },
+  )
+
   const {
     register,
     handleSubmit,
@@ -42,84 +60,89 @@ export function ConfirmStep({
     resolver: zodResolver(confirmSchedulingFormSchema),
   })
 
-  const router = useRouter()
-  const username = String(router.query.username)
-
   async function handleConfirmScheduling(data: ConfirmSchedulingFormData) {
     const { name, email, observations } = data
 
     try {
-      await api.post(`/users/${username}/schedule`, {
+      await confirmScheduling.mutateAsync({
         name,
         email,
         observations,
-        date: schedulingDate,
       })
 
-      onFinishedConfirmation()
-    } catch (error) {
-      if (error instanceof AxiosError && error.response?.data.message) {
-        return alert(error.response.data.message)
-      }
-
-      console.error(error)
-    }
+      onSuccessConfirmation()
+    } catch (error) {}
   }
 
   const describedDate = dayjs(schedulingDate).format('DD[ de ]MMMM[ de ]YYYY')
   const describedTime = dayjs(schedulingDate).format('HH:mm[h]')
 
   return (
-    <ConfirmForm as="form" onSubmit={handleSubmit(handleConfirmScheduling)}>
-      <FormHeader>
-        <Text>
-          <CalendarBlank />
-          {describedDate}
-        </Text>
-        <Text>
-          <Clock />
-          {describedTime}
-        </Text>
-      </FormHeader>
+    <>
+      <ConfirmForm as="form" onSubmit={handleSubmit(handleConfirmScheduling)}>
+        <FormHeader>
+          <Text>
+            <CalendarBlank />
+            {describedDate}
+          </Text>
+          <Text>
+            <Clock />
+            {describedTime}
+          </Text>
+        </FormHeader>
 
-      <label>
-        <Text size="sm">Nome completo</Text>
-        <TextInput placeholder="Seu nome" {...register('name')} />
+        <label>
+          <Text size="sm">Nome completo</Text>
+          <TextInput placeholder="Seu nome" {...register('name')} />
 
-        {errors.name && <FormError size="sm">{errors.name.message}</FormError>}
-      </label>
+          {errors.name && (
+            <FormError size="sm">{errors.name.message}</FormError>
+          )}
+        </label>
 
-      <label>
-        <Text size="sm">Endereço de e-mail</Text>
-        <TextInput
-          type="email"
-          placeholder="johndoe@example.com"
-          {...register('email')}
+        <label>
+          <Text size="sm">Endereço de e-mail</Text>
+          <TextInput
+            type="email"
+            placeholder="johndoe@example.com"
+            {...register('email')}
+          />
+
+          {errors.email && (
+            <FormError size="sm">{errors.email.message}</FormError>
+          )}
+        </label>
+
+        <label>
+          <Text size="sm">Observações</Text>
+          <TextArea {...register('observations')} />
+        </label>
+
+        <FormActions>
+          <Button
+            type="button"
+            variant="tertiary"
+            onClick={onCancelConfirmation}
+            disabled={isSubmitting}
+          >
+            Cancelar
+          </Button>
+          <Button type="submit" disabled={isSubmitting}>
+            Confirmar
+          </Button>
+        </FormActions>
+      </ConfirmForm>
+
+      {confirmScheduling.isError && (
+        <Toast
+          title="Ops..."
+          description={
+            <Text>
+              Ocorreu um erro ao confirmar agendamento. Tente novamente.
+            </Text>
+          }
         />
-
-        {errors.email && (
-          <FormError size="sm">{errors.email.message}</FormError>
-        )}
-      </label>
-
-      <label>
-        <Text size="sm">Observações</Text>
-        <TextArea {...register('observations')} />
-      </label>
-
-      <FormActions>
-        <Button
-          type="button"
-          variant="tertiary"
-          onClick={onFinishedConfirmation}
-          disabled={isSubmitting}
-        >
-          Cancelar
-        </Button>
-        <Button type="submit" disabled={isSubmitting}>
-          Confirmar
-        </Button>
-      </FormActions>
-    </ConfirmForm>
+      )}
+    </>
   )
 }
